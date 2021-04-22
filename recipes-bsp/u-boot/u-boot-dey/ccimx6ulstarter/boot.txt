@@ -1,0 +1,63 @@
+#
+# U-Boot bootscript for NAND images created by Yocto.
+#
+
+# Back up environment variables
+setenv ORIG_extra_bootargs ${extra_bootargs}
+
+#
+# Set device tree filename depending on the board ID (if defined)
+#
+if test -n "${board_id}"; then
+	setenv fdt_file imx6ul-ccimx6ulstarter-id${board_id}.dtb
+else
+	#
+	# Set device tree filename depending on the hardware variant
+	#
+	if test "${module_variant}" = "0x02" || test "${module_variant}" = "0x04" || test "${module_variant}" = "0x06"; then
+		setenv fdt_file imx6ul-ccimx6ulstarter-wb.dtb
+	elif test "${module_variant}" = "0x03" || test "${module_variant}" = "0x05"; then
+		setenv fdt_file imx6ul-ccimx6ulstarter.dtb
+	else
+		setenv fdt_file imx6ul-ccimx6ulstarter-wb.dtb
+	fi
+fi
+
+# Dual boot update verification
+if test "${dual_boot}" = "yes"; then
+	if test "${upgrade_available}" = "1"; then
+		echo "Update detected; Booting new system (try ${bootcount})"
+		if test "${bootcount}" = "${bootlimit}"; then
+			echo "## Update failed; Rolling back to previous version."
+			if test "${mtdbootpart}" = "linux_a"; then
+				setenv mtdbootpart linux_b
+				setenv mtdlinuxindex mtdlinux_b_index
+				setenv mtdrootfsindex mtdrootfs_b_index
+			else
+				setenv mtdbootpart linux_a
+				# Find partition Index
+				setenv mtdlinuxindex mtdlinux_a_index
+				setenv mtdrootfsindex mtdrootfs_a_index
+			fi
+			setenv upgrade_available
+			saveenv
+		fi
+	fi
+else
+	if test "${mtdbootpart}" = "recovery"; then
+		setenv boot_initrd true
+		setenv initrd_file uramdisk-recovery.img
+	else
+		true
+	fi
+fi
+setenv extra_bootargs fbcon=logo-pos:center ${extra_bootargs}
+dboot linux nand ${mtdbootpart}
+
+
+
+# We only get here in case of an error on the dboot command.
+
+# Undo changes to environment variables
+setenv extra_bootargs ${ORIG_extra_bootargs}
+setenv ORIG_extra_bootargs

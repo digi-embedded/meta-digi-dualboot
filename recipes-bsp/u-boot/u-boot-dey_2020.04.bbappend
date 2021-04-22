@@ -9,4 +9,4 @@ UBOOT_EXTRA_CONF += " CONFIG_BOOTCOUNT_LIMIT=y \
      CONFIG_DIGI_DUALBOOT=y \
 "
 
-COMPATIBLE_MACHINE = "(ccimx8x|ccimx8m)"
+COMPATIBLE_MACHINE = "(ccimx8x|ccimx8m|ccimx6ul)"
