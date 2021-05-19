@@ -52,7 +52,7 @@ else
 fi
 
 # Dual boot update verification
-if test "${dual_boot}" = "yes"; then
+if test "${dualboot}" = "yes"; then
 	if test "${upgrade_available}" = "1"; then
 		echo "Update detected; Booting new system (try ${bootcount})"
 		if test "${bootcount}" = "${bootlimit}"; then
