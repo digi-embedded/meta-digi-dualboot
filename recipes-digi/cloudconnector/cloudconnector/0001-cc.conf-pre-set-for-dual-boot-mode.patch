@@ -1,0 +1,41 @@
+From 717da229bb5d989443d26a7a92dd6e49c889c1fb Mon Sep 17 00:00:00 2001
+From: Hector Palacios <hector.palacios@digi.com>
+Date: Mon, 24 May 2021 16:29:16 +0200
+Subject: [PATCH] cc.conf: pre-set for dual boot mode
+
+- Change default firmware download path to external media
+  '/run/media/sda1'.
+- Remove '/mnt/update' virtual directory.
+- Enable dual boot mode.
+
+Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+---
+ app/cfg_files/cc.conf | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/app/cfg_files/cc.conf b/app/cfg_files/cc.conf
+index 4bc51f274253..35f74d61af16 100644
+--- a/app/cfg_files/cc.conf
++++ b/app/cfg_files/cc.conf
+@@ -96,19 +96,14 @@ virtual-dirs
+         name = "tmp"
+         path = "/tmp"
+     }
+-    
+-    vdir {
+-        name = "update"
+-        path = "/mnt/update"
+-    }
+ }
+ 
+ # Firmware Download Path: Absolute path to download the firmware packages from
+ # the cloud. It must be an existing directory.
+-firmware_download_path = /mnt/update
++firmware_download_path = /run/media/sda1
+ 
+ # Enable dualboot support
+-dualboot = false
++dualboot = true
+ 
+ #===============================================================================
+ # Cloud Connector System Monitor Settings
