@@ -91,6 +91,14 @@ automount_systemd() {
 automount() {
 	name="`basename "$DEVNAME"`"
 
+	# Get current partition
+	IS_ROOTFS_PART="$(ls -l /dev/disk/by-partlabel/ | grep -i ${name} | awk '{print $9}')"
+	# Skip rootfs partitions
+	if [ "${IS_ROOTFS_PART}" = "rootfs_a" ] || [ "${IS_ROOTFS_PART}" = "rootfs_b" ]; then
+		logger "Info: rootfs ($name) partition are not mounted"
+		return
+	fi
+
 	if [ -x "$PMOUNT" ]; then
 		$PMOUNT $DEVNAME 2> /dev/null
 	elif [ -x $MOUNT ]; then

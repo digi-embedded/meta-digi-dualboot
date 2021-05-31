@@ -50,9 +50,17 @@ if [ "x$BASE_INIT" = "x$INIT_SYSTEMD" ];then
 else
 	MOUNT="/bin/mount"
 	if [ "$(readlink ${MOUNT})" != "/bin/mount.util-linux" ]; then
-		# Get current boot partition
-                PART_INDEX="$(cat /proc/cmdline | awk '{print $3}' | sed -e 's/[ubi.mtd]//g' -e 's/=//')"
-                LINUX_INDEX="$(cat /proc/mtd | grep -i ${PARTNAME} | awk '{print $1}' | sed -e 's/[mtd]//g' -e 's/://')"
+		if [ "${SUBSYSTEM}" = "block" ]; then
+			# Get current boot partition
+			BOOT_PART="$(fw_printenv -n mmcpart 2>/dev/null)"
+			BOOT_DEV="$(fw_printenv -n mmcbootdev 2>/dev/null)"
+
+			CURRENT_PART="$(ls -l /dev/disk/by-partlabel/ | grep -i mmcblk${BOOT_DEV}p${BOOT_PART} | awk '{print $9}')"
+		else
+			# Get current boot partition
+			PART_INDEX="$(cat /proc/cmdline | awk '{print $3}' | sed -e 's/[ubi.mtd]//g' -e 's/=//')"
+			LINUX_INDEX="$(cat /proc/mtd | grep -i ${PARTNAME} | awk '{print $1}' | sed -e 's/[mtd]//g' -e 's/://')"
+		fi
 		# Busybox mount. Clear default params
 		MOUNT_PARAMS=""
 		# Mount 'linux_x' partition as read-only
