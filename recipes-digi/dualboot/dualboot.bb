@@ -13,7 +13,7 @@ SRC_URI = " \
 
 S = "${WORKDIR}"
 
-inherit systemd
+inherit systemd update-rc.d
 
 do_install() {
 	install -d ${D}${sysconfdir}/init.d/
