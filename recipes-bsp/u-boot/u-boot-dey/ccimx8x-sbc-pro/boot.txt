@@ -65,7 +65,7 @@ if test "${dualboot}" = "yes"; then
 		if test "${bootcount}" = "${bootlimit}"; then
 			echo "## Update failed; Rolling back to previous version."
 			if test "${active_system}" = "linux_a"; then
-				part number mmc {mmcbootdev} linux_b pi
+				part number mmc ${mmcbootdev} linux_b pi
 				setenv mmcpart ${pi}
 				# Save the partition index on variable rootfs_b_index
 				part number mmc ${mmcbootdev} rootfs_b rootfs_b_index
@@ -74,7 +74,7 @@ if test "${dualboot}" = "yes"; then
 				setenv mmcroot PARTUUID=${mmcroot_b}
 				setenv active_system linux_b
 			else
-				part number mmc {mmcbootdev} linux_a pi
+				part number mmc ${mmcbootdev} linux_a pi
 				setenv mmcpart ${pi}
 				# Save the partition index on variable rootfs_a_index
 				part number mmc ${mmcbootdev} rootfs_a rootfs_a_index
