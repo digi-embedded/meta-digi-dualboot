@@ -15,8 +15,35 @@
 #
 #===============================================================================
 
+SCRIPTNAME="$(basename $(readlink -f ${0}))"
+VERBOSE=""
+
+## Local functions
+usage() {
+	cat <<EOF
+
+Usage: ${SCRIPTNAME} [OPTIONS] </your-path/your-filename>.swu
+
+    -v               Enable verbosity
+    -h               Show this help
+
+EOF
+}
+
+while :; do
+	case $1 in
+		-v|--verbose) VERBOSE="-v"
+		;;
+		-h|--help) usage;exit
+		;;
+		*) UPDATE_FILE="${1}"
+		    break
+		;;
+	esac
+	shift
+done
+
 # Check update file parameter.
-UPDATE_FILE="${1}"
 if [ -z "${UPDATE_FILE}" ]; then
 	echo "[ERROR] Update file not specified"
 	exit
@@ -58,7 +85,7 @@ if [ -z "${MTDINDEX}" ]; then
 	echo ""
 
 	# Execute the update.
-	swupdate -v -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
+	swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
 	if [ "$?" = "0" ]; then
 		fw_setenv mmcroot PARTUUID=${PART_UUID}
 		fw_setenv mmcpart ${MMC_PART}
@@ -97,7 +124,7 @@ else
 	echo ""
 
 	# Execute the update.
-	swupdate -v -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
+	swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
 	if [ "$?" = "0" ]; then
 		fw_setenv mtdlinuxindex ${LINUX_INDEX}
 		fw_setenv mtdrootfsindex ${ROTFS_INDEX}
