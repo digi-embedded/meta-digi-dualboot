@@ -24,14 +24,27 @@ usage() {
 
 Usage: ${SCRIPTNAME} [OPTIONS] </your-path/your-filename>.swu
 
+    -a               Show currently active system
     -v               Enable verbosity
     -h               Show this help
 
 EOF
 }
 
+show_active_system() {
+	ACTIVE_SYSTEM="$(fw_printenv -n active_system 2>/dev/null)"
+
+	if [ "${ACTIVE_SYSTEM}" = "linux_a" ]; then
+		echo "Active system is A"
+	else
+		echo "Active system is B"
+	fi
+}
+
 while :; do
 	case $1 in
+		-a|--active) show_active_system;exit
+		;;
 		-v|--verbose) VERBOSE="-v"
 		;;
 		-h|--help) usage;exit
