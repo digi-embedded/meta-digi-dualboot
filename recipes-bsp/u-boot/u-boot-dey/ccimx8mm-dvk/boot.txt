@@ -47,7 +47,6 @@ if test "${dualboot}" = "yes"; then
 		echo "Update detected; Booting new system (try ${bootcount})"
 		if test "${bootcount}" = "${bootlimit}"; then
 			echo "## Update failed; Rolling back to previous version."
-			setenv switch_part 0
 			if test "${active_system}" = "linux_a"; then
 				part number mmc ${mmcbootdev} linux_b pi
 				setenv mmcpart ${pi}
