@@ -83,7 +83,7 @@ if [ "${SUBSYSTEM}" = "block" ]; then
 	fi
 elif [ "${SUBSYSTEM}" = "mtd" ]; then
 	# Check if this is the current boot partition and mount it.
-	if [ "${PART_INDEX}" = "LINUX_INDEX" ]; then
+	if [ "${PART_INDEX}" = "${LINUX_INDEX}" ]; then
 		# Create mount point if needed
 	        MOUNTPOINT="/mnt/${PARTNAME}"
         	[ -d "${MOUNTPOINT}" ] || mkdir -p ${MOUNTPOINT}
