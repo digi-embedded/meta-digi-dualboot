@@ -127,7 +127,7 @@ else
 	swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
 	if [ "$?" = "0" ]; then
 		fw_setenv mtdlinuxindex ${LINUX_INDEX}
-		fw_setenv mtdrootfsindex ${ROTFS_INDEX}
+		fw_setenv mtdrootfsindex ${ROOTFS_INDEX}
 		fw_setenv mtdbootpart ${KERNELBOOT}
 		fw_setenv active_system ${KERNELBOOT}
 		echo "Firmware update finished; Rebooting system."
