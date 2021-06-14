@@ -35,10 +35,10 @@ if test "${dualboot}" = "yes"; then
 				setenv mtdrootfsindex ${mtdrootfs_b_index}
 			else
 				setenv mtdbootpart linux_a
-				# Find partition Index
 				setenv mtdlinuxindex ${mtdlinux_a_index}
 				setenv mtdrootfsindex ${mtdrootfs_a_index}
 			fi
+			setenv active_system ${mtdbootpart}
 			setenv upgrade_available
 			saveenv
 		fi

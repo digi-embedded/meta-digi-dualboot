@@ -38,6 +38,7 @@ if test "${dualboot}" = "yes"; then
 				setenv mtdlinuxindex ${mtdlinux_a_index}
 				setenv mtdrootfsindex ${mtdrootfs_a_index}
 			fi
+			setenv active_system ${mtdbootpart}
 			setenv upgrade_available
 			saveenv
 		fi
