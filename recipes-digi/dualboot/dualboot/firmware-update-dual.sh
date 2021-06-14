@@ -17,6 +17,7 @@
 
 SCRIPTNAME="$(basename $(readlink -f ${0}))"
 VERBOSE=""
+ACTIVE_SYSTEM="$(fw_printenv -n active_system 2>/dev/null)"
 
 ## Local functions
 usage() {
@@ -32,8 +33,6 @@ EOF
 }
 
 show_active_system() {
-	ACTIVE_SYSTEM="$(fw_printenv -n active_system 2>/dev/null)"
-
 	if [ "${ACTIVE_SYSTEM}" = "linux_a" ]; then
 		echo "Active system is A"
 	else
@@ -70,11 +69,9 @@ if [ -z "${MTDINDEX}" ]; then
 	BOOT_PART="$(fw_printenv -n mmcpart 2>/dev/null)"
 	BOOT_DEV="$(fw_printenv -n mmcbootdev 2>/dev/null)"
 
-	CURRENT_PART="$(ls -l /dev/disk/by-partlabel/ | grep -i mmcblk${BOOT_DEV}p${BOOT_PART} | awk '{print $9}')"
-
 	# Get current partition information so we can
 	# determine where to flash the images.
-	if [ "${CURRENT_PART}" = "linux_a" ]; then
+	if [ "${ACTIVE_SYSTEM}" = "linux_a" ]; then
 		echo "Current system is A; Updating system on B"
 		KERNELBOOT="linux_b"
 		ROOTFS="rootfs_b"
@@ -109,12 +106,9 @@ if [ -z "${MTDINDEX}" ]; then
 		echo "[ERROR] $? There was an error performing the update"
 	fi
 else
-	# Get Boot partition device and index.
-	MTD_BOOT_PART="$(fw_printenv -n mtdbootpart 2>/dev/null)"
-
 	# Get current partition information so we can
 	# determine where to flash the images.
-	if [ "${MTD_BOOT_PART}" = "linux_a" ]; then
+	if [ "${ACTIVE_SYSTEM}" = "linux_a" ]; then
 		echo "Current system is A; Updating system on B"
 		KERNELBOOT="linux_b"
 		ROOTFS="rootfs_b"
