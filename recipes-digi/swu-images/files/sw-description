@@ -17,6 +17,7 @@ software =
                     device = "##ROOTFS_DEV_A##";
                     type = "raw";
                     sha256 = "@##ROOTIMG_NAME##";
+                    compressed = "zlib";
                     installed-directly = true;
                 }
             );
@@ -41,6 +42,7 @@ software =
                     device = "##ROOTFS_DEV_B##";
                     type = "raw";
                     sha256 = "@##ROOTIMG_NAME##";
+                    compressed = "zlib";
                     installed-directly = true;
                 }
             );
