@@ -1,5 +1,5 @@
 From: Hector Palacios <hector.palacios@digi.com>
-Date: Mon, 24 May 2021 16:29:16 +0200
+Date: Thu, 8 Jul 2021 09:43:50 +0200
 Subject: [PATCH] cc.conf: pre-set for dual boot mode
 
 - Change default firmware download path to external media
@@ -8,34 +8,33 @@ Subject: [PATCH] cc.conf: pre-set for dual boot mode
 - Enable dual boot mode.
 
 Signed-off-by: Hector Palacios <hector.palacios@digi.com>
-
 ---
  app/cfg_files/cc.conf | 9 ++-------
  1 file changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/app/cfg_files/cc.conf b/app/cfg_files/cc.conf
-index 0bbdf8e60e57..9bf2662b9338 100644
+index 0bbdf8e..9bf2662 100644
 --- a/app/cfg_files/cc.conf
 +++ b/app/cfg_files/cc.conf
 @@ -96,19 +96,14 @@ virtual-dirs
          name = "tmp"
          path = "/tmp"
      }
--
+-    
 -    vdir {
 -        name = "update"
 -        path = "/mnt/update"
 -    }
  }
-
+ 
  # Firmware Download Path: Absolute path to download the firmware packages from
  # the cloud. It must be an existing directory.
 -firmware_download_path = /mnt/update
 +firmware_download_path = /run/media/sda1
-
+ 
  # Enable dualboot support
 -dualboot = false
 +dualboot = true
-
+ 
  # Enables on the fly firmware update support
  on_the_fly = false
