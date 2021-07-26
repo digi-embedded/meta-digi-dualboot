@@ -15,8 +15,47 @@
 #
 #===============================================================================
 
+SCRIPTNAME="$(basename $(readlink -f ${0}))"
+VERBOSE=""
+ACTIVE_SYSTEM="$(fw_printenv -n active_system 2>/dev/null)"
+
+## Local functions
+usage() {
+	cat <<EOF
+
+Usage: ${SCRIPTNAME} [OPTIONS] </your-path/your-filename>.swu
+
+    -a               Show currently active system
+    -v               Enable verbosity
+    -h               Show this help
+
+EOF
+}
+
+show_active_system() {
+	if [ "${ACTIVE_SYSTEM}" = "linux_a" ]; then
+		echo "Active system is A"
+	else
+		echo "Active system is B"
+	fi
+}
+
+while :; do
+	case $1 in
+		-a|--active) show_active_system;exit
+		;;
+		-v|--verbose) VERBOSE="-v"
+		;;
+		-h|--help) usage;exit
+		;;
+		*) UPDATE_FILE="${1}"
+		    break
+		;;
+	esac
+	shift
+done
+
 # Check update file parameter.
-UPDATE_FILE="${1}"
 if [ -z "${UPDATE_FILE}" ]; then
 	echo "[ERROR] Update file not specified"
 	exit
@@ -30,11 +69,9 @@ if [ -z "${MTDINDEX}" ]; then
 	BOOT_PART="$(fw_printenv -n mmcpart 2>/dev/null)"
 	BOOT_DEV="$(fw_printenv -n mmcbootdev 2>/dev/null)"
 
-	CURRENT_PART="$(ls -l /dev/disk/by-partlabel/ | grep -i mmcblk${BOOT_DEV}p${BOOT_PART} | awk '{print $9}')"
-
 	# Get current partition information so we can
 	# determine where to flash the images.
-	if [ "${CURRENT_PART}" = "linux_a" ]; then
+	if [ "${ACTIVE_SYSTEM}" = "linux_a" ]; then
 		echo "Current system is A; Updating system on B"
 		KERNELBOOT="linux_b"
 		ROOTFS="rootfs_b"
@@ -58,7 +95,7 @@ if [ -z "${MTDINDEX}" ]; then
 	echo ""
 
 	# Execute the update.
-	swupdate -v -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
+	swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
 	if [ "$?" = "0" ]; then
 		fw_setenv mmcroot PARTUUID=${PART_UUID}
 		fw_setenv mmcpart ${MMC_PART}
@@ -69,12 +106,9 @@ if [ -z "${MTDINDEX}" ]; then
 		echo "[ERROR] $? There was an error performing the update"
 	fi
 else
-	# Get Boot partition device and index.
-	MTD_BOOT_PART="$(fw_printenv -n mtdbootpart 2>/dev/null)"
-
 	# Get current partition information so we can
 	# determine where to flash the images.
-	if [ "${MTD_BOOT_PART}" = "linux_a" ]; then
+	if [ "${ACTIVE_SYSTEM}" = "linux_a" ]; then
 		echo "Current system is A; Updating system on B"
 		KERNELBOOT="linux_b"
 		ROOTFS="rootfs_b"
@@ -97,10 +131,10 @@ else
 	echo ""
 
 	# Execute the update.
-	swupdate -v -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
+	swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
 	if [ "$?" = "0" ]; then
 		fw_setenv mtdlinuxindex ${LINUX_INDEX}
-		fw_setenv mtdrootfsindex ${ROTFS_INDEX}
+		fw_setenv mtdrootfsindex ${ROOTFS_INDEX}
 		fw_setenv mtdbootpart ${KERNELBOOT}
 		fw_setenv active_system ${KERNELBOOT}
 		echo "Firmware update finished; Rebooting system."

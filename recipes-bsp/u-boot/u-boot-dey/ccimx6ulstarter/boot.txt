@@ -31,16 +31,28 @@ if test "${dualboot}" = "yes"; then
 			echo "## Update failed; Rolling back to previous version."
 			if test "${mtdbootpart}" = "linux_a"; then
 				setenv mtdbootpart linux_b
-				setenv mtdlinuxindex mtdlinux_b_index
-				setenv mtdrootfsindex mtdrootfs_b_index
+				setenv mtdlinuxindex ${mtdlinux_b_index}
+				setenv mtdrootfsindex ${mtdrootfs_b_index}
 			else
 				setenv mtdbootpart linux_a
-				# Find partition Index
-				setenv mtdlinuxindex mtdlinux_a_index
-				setenv mtdrootfsindex mtdrootfs_a_index
+				setenv mtdlinuxindex ${mtdlinux_a_index}
+				setenv mtdrootfsindex ${mtdrootfs_a_index}
 			fi
+			setenv active_system ${mtdbootpart}
 			setenv upgrade_available
 			saveenv
+		fi
+	else
+		if test "${active_system}" = "linux_a"; then
+			echo "Booting from system A"
+			setenv mtdbootpart ${active_system}
+			setenv mtdlinuxindex ${mtdlinux_a_index}
+			setenv mtdrootfsindex ${mtdrootfs_a_index}
+		else
+			echo "Booting from system B"
+			setenv mtdbootpart ${active_system}
+			setenv mtdlinuxindex ${mtdlinux_b_index}
+			setenv mtdrootfsindex ${mtdrootfs_b_index}
 		fi
 	fi
 else
