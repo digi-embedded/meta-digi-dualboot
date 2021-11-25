@@ -48,14 +48,8 @@ if [ -z "${MTDINDEX}" ]; then
 	fw_setenv mmcpart ${MMC_PART}
 	fw_setenv active_system ${KERNELBOOT}
 else
-	# get boot partition index
-	LINUX_INDEX="$(cat /proc/mtd | grep -i ${KERNELBOOT} | awk '{print $1}' | sed -e 's/[mtd]//g' -e 's/://')"
-
-	# get rootfs index
-	ROOTFS_INDEX="$(cat /proc/mtd | grep -i ${ROOTFS} | awk '{print $1}' | sed -e 's/[mtd]//g' -e 's/://')"
-
-	fw_setenv mtdlinuxindex ${LINUX_INDEX}
-	fw_setenv mtdrootfsindex ${ROOTFS_INDEX}
 	fw_setenv mtdbootpart ${KERNELBOOT}
+	fw_setenv mtdrootfspart ${ROOTFS}
+	fw_setenv rootfsvol ${ROOTFS}
 	fw_setenv active_system ${KERNELBOOT}
 fi
