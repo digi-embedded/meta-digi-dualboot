@@ -100,6 +100,7 @@ if [ -z "${MTDINDEX}" ]; then
 		fw_setenv mmcroot PARTUUID=${PART_UUID}
 		fw_setenv mmcpart ${MMC_PART}
 		fw_setenv active_system ${KERNELBOOT}
+		fw_setenv bootcount 0
 		echo "Firmware update finished; Rebooting system."
 		reboot -f
 	else
@@ -137,6 +138,7 @@ else
 		fw_setenv mtdrootfsindex ${ROOTFS_INDEX}
 		fw_setenv mtdbootpart ${KERNELBOOT}
 		fw_setenv active_system ${KERNELBOOT}
+		fw_setenv bootcount 0
 		echo "Firmware update finished; Rebooting system."
 		reboot -f
 	else

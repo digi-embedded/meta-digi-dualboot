@@ -3,7 +3,7 @@ Date: Thu, 8 Jul 2021 09:43:50 +0200
 Subject: [PATCH] cc.conf: pre-set for dual boot mode
 
 - Change default firmware download path to external media
-  '/run/media/sda1'.
+  '/home/root/'.
 - Remove '/mnt/update' virtual directory.
 - Enable dual boot mode.
 
@@ -30,7 +30,7 @@ index 0bbdf8e..9bf2662 100644
  # Firmware Download Path: Absolute path to download the firmware packages from
  # the cloud. It must be an existing directory.
 -firmware_download_path = /mnt/update
-+firmware_download_path = /run/media/sda1
++firmware_download_path = /home/root
  
  # Enable dualboot support
 -dualboot = false

@@ -8,11 +8,11 @@ without enough memory directly through the cloud.
 
 Signed-off-by: Mike Engel <Mike.Engel@digi.com>
 ---
- library/src/cc_firmware_update.c | 354 ++++++++++++++++++++++++++++++---------
- 1 file changed, 275 insertions(+), 79 deletions(-)
+ library/src/cc_firmware_update.c | 356 ++++++++++++++++++++++++++++++---------
+ 1 file changed, 277 insertions(+), 79 deletions(-)
 
 diff --git a/library/src/cc_firmware_update.c b/library/src/cc_firmware_update.c
-index c1d4f23..aeb62cd 100644
+index c1d4f23..ac2429b 100644
 --- a/library/src/cc_firmware_update.c
 +++ b/library/src/cc_firmware_update.c
 @@ -22,6 +22,7 @@
@@ -140,7 +140,7 @@ index c1d4f23..aeb62cd 100644
  
  	log_fw_info("Firmware download requested (target '%d')", target);
  
-@@ -197,31 +284,89 @@ ccapi_fw_request_error_t app_fw_request_cb(unsigned int const target,
+@@ -197,31 +284,91 @@ ccapi_fw_request_error_t app_fw_request_cb(unsigned int const target,
  		return CCAPI_FW_REQUEST_ERROR_ENCOUNTERED_ERROR;
  	}
  
@@ -191,6 +191,7 @@ index c1d4f23..aeb62cd 100644
 +		fp = popen(cmd, "r");
 +		if (fp == NULL){
 +			log_fw_error("Couldn't execute cmd %s", cmd);
++			retval = -1;
 +		} else {
 +			/* Read script output till finished */
 +			if (fgets(line, LINE_BUFSIZE, fp) == NULL) {
@@ -200,7 +201,9 @@ index c1d4f23..aeb62cd 100644
 +			pclose(fp);
 +			/* Detect storage media */
 +			sprintf(proc_path, "%s", "/proc/mtd");
-+			if (stat(proc_path, &stats) == 0){
++			stat(proc_path, &stats);
++			/* On eMMC devices the size will be zero */
++			if (stats.st_size != 0) {
 +				strncpy(req.software_set, "mtd" , sizeof(req.software_set) - 1);
 +			} else {
 +				strncpy(req.software_set, "mmc" , sizeof(req.software_set) - 1);
@@ -214,9 +217,8 @@ index c1d4f23..aeb62cd 100644
 +				strncpy(req.running_mode, "primary" , sizeof(req.running_mode) - 1);
 +				active_system_linux_a = 0;
 +			}
++			retval = swupdate_async_start(readimage, printstatus, end, &req, sizeof(req));
 +		}
-+
-+		retval = swupdate_async_start(readimage, printstatus, end, &req, sizeof(req));
 +
 +		/* return if we've hit an error scenario */
 +		if (retval < 0) {
@@ -253,7 +255,7 @@ index c1d4f23..aeb62cd 100644
  	}
  
  done:
-@@ -250,57 +395,83 @@ done:
+@@ -250,57 +397,83 @@ done:
  ccapi_fw_data_error_t app_fw_data_cb(unsigned int const target, uint32_t offset,
  		void const *const data, size_t size, ccapi_bool_t last_chunk) {
  	ccapi_fw_data_error_t error = CCAPI_FW_DATA_ERROR_NONE;
@@ -373,7 +375,7 @@ index c1d4f23..aeb62cd 100644
  	}
  
  	return error;
-@@ -347,34 +518,49 @@ void app_fw_reset_cb(unsigned int const target, ccapi_bool_t *system_reset, ccap
+@@ -347,34 +520,49 @@ void app_fw_reset_cb(unsigned int const target, ccapi_bool_t *system_reset, ccap
  {
  	unsigned int *reboot_timeout = NULL;
  	int error = 0;
@@ -440,7 +442,7 @@ index c1d4f23..aeb62cd 100644
  	}
  
  	reboot_timeout = malloc(sizeof (unsigned int));
-@@ -386,8 +572,18 @@ void app_fw_reset_cb(unsigned int const target, ccapi_bool_t *system_reset, ccap
+@@ -386,8 +574,18 @@ void app_fw_reset_cb(unsigned int const target, ccapi_bool_t *system_reset, ccap
  
  	log_fw_info("Rebooting in %d seconds", *reboot_timeout);
  
@@ -462,4 +464,3 @@ index c1d4f23..aeb62cd 100644
  error:
  
 -- 
-
