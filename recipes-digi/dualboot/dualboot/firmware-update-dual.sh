@@ -17,6 +17,7 @@
 
 SCRIPTNAME="$(basename $(readlink -f ${0}))"
 VERBOSE=""
+PUBLIC_KEY="/etc/ssl/certs/key.pub"
 ACTIVE_SYSTEM="$(fw_printenv -n active_system 2>/dev/null)"
 
 ## Local functions
@@ -126,7 +127,11 @@ else
 	echo ""
 
 	# Execute the update.
-	swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
+	if [ -f "${PUBLIC_KEY}" ]; then
+		swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}" -k "${PUBLIC_KEY}"
+	else
+		swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
+	fi
 	if [ "$?" = "0" ]; then
 		fw_setenv mtdbootpart ${KERNELBOOT}
 		fw_setenv mtdrootfspart ${ROOTFS}

@@ -27,6 +27,31 @@ do_install() {
 
 	install -d ${D}${systemd_unitdir}/system/
 	install -m 0644 ${WORKDIR}/firmware-update-check.service ${D}${systemd_unitdir}/system/
+
+	# If Trustfence is enabled, copy the public key that is going to be used into the
+	# initramfs '/etc/ssl/certs' folder in order to verify swupdate packages.
+	if [ "${TRUSTFENCE_SIGN}" = "1" ]; then
+		# Retrieve the key index to use.
+		KEY_INDEX="0"
+		if [ -n "${TRUSTFENCE_KEY_INDEX}" ]; then
+			KEY_INDEX="${TRUSTFENCE_KEY_INDEX}"
+		fi
+		KEY_INDEX_1=$(expr ${KEY_INDEX} + 1)
+
+		# Find the certificate to use.
+		if [ "${TRUSTFENCE_SIGN_MODE}" = "HAB" ]; then
+			CERT_IMG="$(echo ${TRUSTFENCE_SIGN_KEYS_PATH}/crts/IMG${KEY_INDEX_1}*crt.pem)"
+		elif [ "${TRUSTFENCE_SIGN_MODE}" = "AHAB" ]; then
+			CERT_IMG="$(echo ${TRUSTFENCE_SIGN_KEYS_PATH}/crts/SRK${KEY_INDEX_1}*_ca_crt.pem)"
+		else
+			bberror "Unkown TRUSTFENCE_SIGN_MODE value"
+			exit 1
+		fi
+
+		# Extract the public key from the certificate.
+		install -d ${D}${sysconfdir}/ssl/certs
+		openssl x509 -pubkey -noout -in "${CERT_IMG}" > ${D}${sysconfdir}/ssl/certs/key.pub
+	fi
 }
 
 PACKAGES =+ "${PN}-init"
@@ -36,6 +61,7 @@ FILES_${PN}-init = " \
     ${bindir}/firmware-update-dual.sh \
     ${bindir}/on-the-fly-swap-partition.sh \
     ${systemd_unitdir}/system/firmware-update-check.service \
+    ${@oe.utils.conditional('TRUSTFENCE_SIGN', '1', '${sysconfdir}/ssl/certs/key.pub', '', d)} \
 "
 
 INITSCRIPT_PACKAGES += "${PN}-init"
