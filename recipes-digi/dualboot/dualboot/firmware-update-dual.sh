@@ -17,6 +17,7 @@
 
 SCRIPTNAME="$(basename $(readlink -f ${0}))"
 VERBOSE=""
+PUBLIC_KEY="/etc/ssl/certs/key.pub"
 ACTIVE_SYSTEM="$(fw_printenv -n active_system 2>/dev/null)"
 
 ## Local functions
@@ -121,22 +122,20 @@ else
 		IMAGE_SET="mtd,primary"
 	fi
 
-	# get boot partition index
-	LINUX_INDEX="$(cat /proc/mtd | grep -i ${KERNELBOOT} | awk '{print $1}' | sed -e 's/[mtd]//g' -e 's/://')"
-
-	# get rootfs index
-	ROOTFS_INDEX="$(cat /proc/mtd | grep -i ${ROOTFS} | awk '{print $1}' | sed -e 's/[mtd]//g' -e 's/://')"
-
 	echo ""
 	echo "Updating '${IMAGE_SET}' image set from '${UPDATE_FILE}'..."
 	echo ""
 
 	# Execute the update.
-	swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
+	if [ -f "${PUBLIC_KEY}" ]; then
+		swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}" -k "${PUBLIC_KEY}"
+	else
+		swupdate ${VERBOSE} -i "${UPDATE_FILE}" -e "${IMAGE_SET}"
+	fi
 	if [ "$?" = "0" ]; then
-		fw_setenv mtdlinuxindex ${LINUX_INDEX}
-		fw_setenv mtdrootfsindex ${ROOTFS_INDEX}
 		fw_setenv mtdbootpart ${KERNELBOOT}
+		fw_setenv mtdrootfspart ${ROOTFS}
+		fw_setenv rootfsvol ${ROOTFS}
 		fw_setenv active_system ${KERNELBOOT}
 		fw_setenv bootcount 0
 		echo "Firmware update finished; Rebooting system."
