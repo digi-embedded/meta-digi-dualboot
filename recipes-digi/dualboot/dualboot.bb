@@ -5,6 +5,12 @@ SECTION = "base"
 LICENSE = "GPL-2.0"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
+# When building a TrustFence enabled rootfs, we need the TrustFence PKI tree to
+# be already generated in order to copy the public key. Forcing a dependency with
+# 'virtual/kernel' ensures that the keys are already generated as they are needed to sign the
+# kernel artifacts.
+DEPENDS += "${@oe.utils.conditional('TRUSTFENCE_SIGN', '1', 'virtual/kernel openssl-native', '', d)}"
+
 SRC_URI = " \
     file://dualboot-init \
     file://firmware-update-dual.sh \
@@ -76,5 +82,5 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 # Add swupdate into the rootfs for dual boot support
 RDEPENDS_${PN}-init = " \
     swupdate \
+    trustfence-tool \
 "
-
