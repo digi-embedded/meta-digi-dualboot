@@ -18,7 +18,7 @@ do_deploy_append() {
 		[ -n "${TRUSTFENCE_SIGN_MODE}" ] && export CONFIG_SIGN_MODE="${TRUSTFENCE_SIGN_MODE}"
 
 		# Sign boot script
-		TMP_SIGNED_BOOTSCR="$(mktemp ${WORKDIR}/altboot-signed.scr)"
+		TMP_SIGNED_BOOTSCR="$(mktemp ${WORKDIR}/altboot-signed.XXXXXX)"
 		trustfence-sign-artifact.sh -p "${DIGI_FAMILY}" -b "${DEPLOYDIR}/altboot.scr" "${TMP_SIGNED_BOOTSCR}"
 		mv "${TMP_SIGNED_BOOTSCR}" "${DEPLOYDIR}/altboot.scr"
 	fi
