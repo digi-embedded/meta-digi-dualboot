@@ -1,10 +1,8 @@
-# Copyright (C) 2021 Digi International Inc.
+# Copyright (C) 2021,2022 Digi International Inc.
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
 
 SRC_URI += " \
-    file://0001-Makefile-change-Makefile-to-build-swupdate-library-s.patch \
-    file://0002-config-add-on-the-fly-build-configuration-variable.patch \
     ${@oe.utils.conditional('TRUSTFENCE_SIGN', '1', 'file://trustfence.conf', '', d)} \
 "
 
