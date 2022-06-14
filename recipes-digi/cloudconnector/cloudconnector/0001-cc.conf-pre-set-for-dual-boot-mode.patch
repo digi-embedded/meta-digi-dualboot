@@ -13,18 +13,24 @@ Signed-off-by: Hector Palacios <hector.palacios@digi.com>
  1 file changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/app/cfg_files/cc.conf b/app/cfg_files/cc.conf
-index 0bbdf8e..9bf2662 100644
+index 7018efb..bff9332 100644
 --- a/app/cfg_files/cc.conf
 +++ b/app/cfg_files/cc.conf
-@@ -96,19 +96,14 @@ virtual-dirs
+@@ -99,27 +99,22 @@ virtual-dirs
+     vdir {
          name = "tmp"
          path = "/tmp"
      }
--    
+ 
 -    vdir {
 -        name = "update"
 -        path = "/mnt/update"
 -    }
+-
+     vdir {
+         name = "media"
+         path = "/run/media"
+     }
  }
  
  # Firmware Download Path: Absolute path to download the firmware packages from
@@ -38,3 +44,5 @@ index 0bbdf8e..9bf2662 100644
  
  # Enables on the fly firmware update support
  on_the_fly = false
+ 
+ #===============================================================================
